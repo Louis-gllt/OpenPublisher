@@ -16,9 +16,17 @@ L’import `.pub` est expérimental et peut nécessiter LibreOffice. Les documen
 
 ## Installation et mises à jour
 
-Les futurs installateurs validés seront disponibles exclusivement dans les [Releases officielles](https://github.com/Louis-gllt/OpenPublisher/releases). En l’absence de Release, aucun installateur public n’est proposé.
+Des **préversions bêta expérimentales** sont disponibles dans les [Releases officielles](https://github.com/Louis-gllt/OpenPublisher/releases).
 
-La mise à jour à distance est en préparation. Elle restera désactivée tant que la vérification de l’authenticité des packages et les essais d’installation indépendants ne seront pas validés. Aucun compte GitHub ni outil de développement ne devra être nécessaire pour utiliser les futures versions distribuées.
+1. Télécharger `OpenPublisher-Setup-x64.exe` depuis la version bêta souhaitée.
+2. Exécuter l'installateur Windows et choisir les raccourcis ainsi que l'association `.opub` facultative.
+3. Lancer **OpenPublisher** depuis le bureau ou le menu Démarrer.
+
+Windows x64 ; runtime inclus. Aucun SDK .NET, Git, compte GitHub ni dossier de développement n'est nécessaire. Conservez vos publications originales et des sauvegardes indépendantes : aucune version stable n'est encore proposée.
+
+Dans **Fichier → À propos**, choisir Stable ou Bêta et rechercher les mises à jour. Le logiciel utilise uniquement les Releases de ce dépôt, vérifie un manifeste RSA signé et le SHA-256 du paquet avant installation, puis demande confirmation pour fermer les publications. Les premières bêtas servent notamment à valider ce parcours de bout en bout ; aucune validation sur PC vierge n'est encore annoncée.
+
+La signature du manifeste est distincte d'Authenticode. Aucun certificat Authenticode n'est actuellement configuré ; les protections et avertissements Windows restent actifs.
 
 ## Support et confidentialité
 
@@ -32,8 +40,3 @@ Ce dépôt public est réservé à la présentation et à la distribution du log
 
 OpenPublisher est un projet indépendant, non affilié à Microsoft. Microsoft Publisher est une marque de Microsoft.
 
-## Canal bêta en préparation
-
-Les futures bêtas utiliseront des installateurs autonomes Windows x64 et un manifeste RSA-4096 signé, vérifié par le logiciel avant installation. La signature du manifeste ne constitue pas une signature Authenticode. La chaîne complète installation puis mise à jour Internet reste à valider. Aucune version n'est annoncée disponible avant sa publication effective dans Releases.
-
-Le workflow de publication de ce dépôt accepte uniquement des tags bêta avec un installateur dont le manifeste correspond à la clé publique de distribution. Il ne compile aucun code source privé et ne publie aucun secret.
