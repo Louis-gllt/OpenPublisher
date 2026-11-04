@@ -24,7 +24,7 @@ Des **préversions bêta expérimentales** sont disponibles dans les [Releases o
 
 Windows x64 ; runtime inclus. Aucun SDK .NET, Git, compte GitHub ni dossier de développement n'est nécessaire. Conservez vos publications originales et des sauvegardes indépendantes : aucune version stable n'est encore proposée.
 
-Dans **Fichier → À propos**, choisir Stable ou Bêta et rechercher les mises à jour. Le logiciel utilise uniquement les Releases de ce dépôt, vérifie un manifeste RSA signé et le SHA-256 du paquet avant installation, puis demande confirmation pour fermer les publications. Les premières bêtas servent notamment à valider ce parcours de bout en bout ; aucune validation sur PC vierge n'est encore annoncée.
+Dans **Fichier → À propos**, choisir Stable ou Bêta et rechercher les mises à jour. Le logiciel utilise uniquement les Releases de ce dépôt, vérifie un manifeste RSA signé et le SHA-256 du paquet avant installation, puis demande confirmation pour fermer les publications. Le parcours réel bêta 1 → bêta 2 a été validé sur une installation Windows 11, avec récupération d'une modification non enregistrée et export PDF. La validation sur un PC vierge reste à effectuer.
 
 La signature du manifeste est distincte d'Authenticode. Aucun certificat Authenticode n'est actuellement configuré ; les protections et avertissements Windows restent actifs.
 
