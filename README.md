@@ -31,3 +31,9 @@ Les copies de récupération et les diagnostics sont locaux. Ils ne remplacent p
 Ce dépôt public est réservé à la présentation et à la distribution du logiciel. Il ne contient pas le code source de développement. Les conditions de distribution, notices de composants tiers et signatures applicables accompagneront les futurs packages ; aucune licence sur le code privé n’est accordée par ce README.
 
 OpenPublisher est un projet indépendant, non affilié à Microsoft. Microsoft Publisher est une marque de Microsoft.
+
+## Canal bêta en préparation
+
+Les futures bêtas utiliseront des installateurs autonomes Windows x64 et un manifeste RSA-4096 signé, vérifié par le logiciel avant installation. La signature du manifeste ne constitue pas une signature Authenticode. La chaîne complète installation puis mise à jour Internet reste à valider. Aucune version n'est annoncée disponible avant sa publication effective dans Releases.
+
+Le workflow de publication de ce dépôt accepte uniquement des tags bêta avec un installateur dont le manifeste correspond à la clé publique de distribution. Il ne compile aucun code source privé et ne publie aucun secret.

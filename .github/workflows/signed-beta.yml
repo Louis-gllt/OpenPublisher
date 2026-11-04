@@ -1,0 +1,45 @@
+name: Publish approved signed beta
+on:
+  push:
+    tags: ['v0.*-beta.*']
+permissions:
+  contents: write
+concurrency:
+  group: public-beta-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate approved package before publication
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          if ($env:GITHUB_REF_NAME -cnotmatch '^v0\.[0-9]+\.[0-9]+-beta\.[1-9][0-9]*$') { throw 'Not a beta tag' }
+          $key=[IO.File]::ReadAllBytes('trust/release-public.blob')
+          if (([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($key))).ToLowerInvariant() -ne '8610a7db2d18e4cd7aa0691ec498434102a7b7ba1488977211541fdaee810273') { throw 'Trust root mismatch' }
+          $bytes=[IO.File]::ReadAllBytes('release/release-manifest.json')
+          $signature=[IO.File]::ReadAllBytes('release/release-manifest.json.sig')
+          $rsa=[Security.Cryptography.RSACryptoServiceProvider]::new()
+          try {
+            $rsa.ImportCspBlob($key)
+            if (!$rsa.VerifyData($bytes,$signature,[Security.Cryptography.HashAlgorithmName]::SHA256,[Security.Cryptography.RSASignaturePadding]::Pkcs1)) { throw 'Invalid publisher signature' }
+          } finally { $rsa.Dispose() }
+          $manifest=[Text.Encoding]::UTF8.GetString($bytes)|ConvertFrom-Json
+          if ($manifest.Schema -ne 2 -or $manifest.Tag -cne $env:GITHUB_REF_NAME -or $manifest.Payload.Channel -cne 'beta' -or $manifest.Payload.Repository -cne 'https://github.com/Louis-gllt/OpenPublisher' -or $manifest.Payload.Package -cne 'OpenPublisher-Setup-x64.exe' -or $manifest.Payload.AppId -cne '{FD750D6E-99EC-4C06-9B09-13642AA3F0F1}') { throw 'Release identity mismatch' }
+          $package=Get-Item 'release/OpenPublisher-Setup-x64.exe'
+          if ($package.Length -ne $manifest.PackageLength -or (Get-FileHash $package.FullName).Hash -ne $manifest.Payload.PackageSha256) { throw 'Installer corrupted' }
+          if ((Get-AuthenticodeSignature $package.FullName).Status -eq 'Valid') { Write-Host 'Authenticode signature valid' } else { Write-Host 'No validated Authenticode certificate; RSA manifest authenticated independently' }
+          $manifest.Notes+"`n`nSource commit: "+$manifest.Payload.Commit+"`nManifest authenticated with pinned RSA-4096 key. Development beta; no claim of stable validation." | Set-Content -Encoding utf8 'release/notes.md'
+      - name: Publish prerelease assets only
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create $env:GITHUB_REF_NAME release/OpenPublisher-Setup-x64.exe release/release-manifest.json release/release-manifest.json.sig release/checksums.sha256 --repo Louis-gllt/OpenPublisher --prerelease --title "OpenPublisher $env:GITHUB_REF_NAME" --notes-file release/notes.md
+          if ($LASTEXITCODE) { throw 'Prerelease publication failed' }
+          $url="https://github.com/Louis-gllt/OpenPublisher/releases/download/$env:GITHUB_REF_NAME/OpenPublisher-Setup-x64.exe"
+          Invoke-WebRequest $url -OutFile "$env:RUNNER_TEMP/public-installer.exe"
+          if ((Get-FileHash "$env:RUNNER_TEMP/public-installer.exe").Hash -ne (Get-FileHash 'release/OpenPublisher-Setup-x64.exe').Hash) { throw 'Unauthenticated download hash mismatch' }
