@@ -1,0 +1,19 @@
+name: Distribution runner and trust check
+on:
+  push:
+    branches: ['ci/runner-check']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - shell: pwsh
+        run: |
+          $key=[IO.File]::ReadAllBytes('trust/release-public.blob')
+          if (([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($key))).ToLowerInvariant() -ne '8610a7db2d18e4cd7aa0691ec498434102a7b7ba1488977211541fdaee810273') { throw 'Public trust root mismatch' }
+          $rsa=[Security.Cryptography.RSACryptoServiceProvider]::new()
+          try { $rsa.PersistKeyInCsp=$false; $rsa.ImportCspBlob($key); if ($rsa.KeySize -ne 4096) { throw 'Unexpected key size' } } finally { $rsa.Dispose() }
+          Write-Output 'Distribution runner available; public RSA trust root verified. No package published.'
